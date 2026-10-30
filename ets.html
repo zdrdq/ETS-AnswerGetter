@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>E听说套题答案查看器 · 纯净阅读版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', Roboto, system-ui, sans-serif;
+            background: #f4f9fe;
+            margin: 0;
+            padding: 24px 20px;
+            color: #1e2a3e;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            transition: all 0.2s;
+        }
+        h2 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.9rem;
+            color: #0b3b4f;
+        }
+        .guide {
+            background: #eef4ff;
+            border-left: 5px solid #2c7cb6;
+            padding: 18px 24px;
+            border-radius: 24px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .guide code {
+            background: #1e2c3a;
+            color: #eaf6ff;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+        .tip-highlight {
+            background: #fef7e0;
+            border-radius: 40px;
+            padding: 6px 14px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        button {
+            background: #2c7cb6;
+            border: none;
+            padding: 10px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background: #1f5e8c;
+            transform: translateY(-1px);
+        }
+        .file-status {
+            background: #eaf0f6;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1f5e8c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #dde7f0;
+            padding: 12px 14px;
+            vertical-align: top;
+            text-align: left;
+        }
+        th {
+            background: #eef3fc;
+            font-weight: 600;
+            color: #1f5e8c;
+        }
+        .answer {
+            background: #fff1e6;
+            color: #c23c1c;
+            font-weight: bold;
+            text-align: center;
+        }
+        .dialogue-text {
+            background: #fefaf5;
+            line-height: 1.5;
+            font-size: 0.92rem;
+        }
+        .option-badge {
+            display: inline-block;
+            background: #f5f9ff;
+            border-radius: 30px;
+            padding: 4px 12px;
+            margin: 4px 8px 4px 0;
+            font-size: 0.85rem;
+            border: 1px solid #cbdde9;
+        }
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 32px 0 18px 0;
+            padding-left: 14px;
+            border-left: 6px solid #2c7cb6;
+            color: #114e6b;
+        }
+        .read-card, .picture-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 20px 26px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2edf6;
+        }
+        .keypoint-list {
+            padding-left: 22px;
+            margin: 10px 0;
+            list-style-type: square;
+        }
+        .keypoint-list li {
+            margin: 6px 0;
+            line-height: 1.45;
+        }
+        .audio-player {
+            margin-top: 14px;
+            background: #f1f8fe;
+            padding: 12px 18px;
+            border-radius: 48px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        audio {
+            max-width: 260px;
+            height: 40px;
+            border-radius: 30px;
+        }
+        .stid {
+            font-size: 0.7rem;
+            color: #7b98b3;
+            font-family: monospace;
+        }
+        .badge-type {
+            background: #e3f0f9;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #2c7cb6;
+            letter-spacing: 0.3px;
+        }
+        hr {
+            margin: 12px 0;
+            border-color: #e2edf2;
+        }
+        footer {
+            text-align: center;
+            margin-top: 36px;
+            font-size: 0.8rem;
+            color: #5f7f9c;
+        }
+        @media (max-width: 700px) {
+            body { padding: 16px; }
+            th, td { padding: 8px; font-size: 0.85rem; }
+        }
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: #2c7cb6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📖 E听说 答案查看器 · 纯享文章版</h2>
+    <div class="guide">
+        🧭 <strong>智能引导 · 快速定位缓存目录</strong><br>
+        📁 E听说数据通常保存在：<code>C:\Users\你的用户名\AppData\Roaming\ETS\</code> 下的<strong>数字ID文件夹</strong>（例如 <code>587147</code>）。<br>
+        ✅ <strong>操作步骤：</strong><br>
+        1️⃣ 点击下方「📂 选择文件夹」按钮。<br>
+        2️⃣ 在弹窗中依次定位到 <strong>Roaming\ETS\数字ID文件夹</strong>（例如 ...\ETS\587147），<strong>直接选择这个数字ID文件夹</strong>。<br>
+        3️⃣ 点击「✨ 加载纯净答案」，即可查看所有选择题、转述、朗读等题目的<strong>干净文章及标准答案</strong>。<br>
+        💡 <em>本版本已自动清除HTML标签及对话标记（如“W: ”、“M: ”），仅保留可读正文，且不展示任何JSON原始数据。</em>
+        <div class="tip-highlight">🔊 支持内嵌音频播放（同目录下音频自动匹配）</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <input type="file" id="folderInput" webkitdirectory multiple style="display: none;">
+        <button id="selectFolderBtn">📂 选择文件夹 (数字ID目录)</button>
+        <button id="loadBtn">✨ 加载纯净答案</button>
+        <span id="fileCountBadge" class="file-status">⚡ 未选择文件夹</span>
+    </div>
+    <div id="output"></div>
+    <footer>🎯 支持题型：听后选择 · 听后转述 · 朗读短文 · 角色扮演 · 听后回答  |  文本自动净化为纯文章，无冗余标签</footer>
+</div>
+
+<script>
+    // ---------- 核心存储（仅保留标准题型）----------
+    let chosenFiles = [];            // 用户选择的文件列表
+    let audioBlobCache = new Map();  // 文件名 -> blob url
+    
+    // 题型数据容器 (不存储任何补充/原始json)
+    const store = {
+        choose: new Map(),     // key: stid_xtxh
+        picture: new Map(),    // key: stid
+        read: new Map(),       // key: stid
+        role: new Map(),       // 角色扮演
+        ask: new Map()         // 听后回答
+    };
+    
+    // DOM 元素
+    const folderInput = document.getElementById('folderInput');
+    const selectFolderBtn = document.getElementById('selectFolderBtn');
+    const loadBtn = document.getElementById('loadBtn');
+    const outputDiv = document.getElementById('output');
+    const fileCountBadge = document.getElementById('fileCountBadge');
+    
+    // ---------- 文本净化核心: 移除所有HTML标签 + 移除对话角色标记(W:/M:/A:/B:等)，仅保留文章句子 ----------
+    function cleanToPureText(raw) {
+        if (!raw) return '';
+        // 1. 去除HTML标签 (包括<p>, <br>, <div>等)
+        let text = raw.replace(/<[^>]*>/g, ' ');
+        // 2. 处理HTML实体
+        text = text.replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        // 3. 去除常见的对话角色标记 (W: M: A: B: C: Teacher: Student: 等，包括中英文冒号)
+        //   支持 "W: ", "M: ", "W:", "M:", "A:", "B:", "Teacher:", "Student:", 以及可能的空格变体
+        text = text.replace(/\b(W|M|A|B|C|Teacher|Student|Man|Woman|Speaker|Host|Guest)\s*:\s*/gi, ' ');
+        // 4. 清理多余空格和换行，合并空白
+        text = text.replace(/\s+/g, ' ').trim();
+        // 5. 移除剩余的孤立标点修饰
+        text = text.replace(/^\W+/, '');
+        return text || '(原文无文本内容)';
+    }
+    
+    // 同时清理转述要点中的html及角色标记
+    function cleanKeypointList(raw) {
+        if (!raw) return [];
+        const parts = raw.split(/<\/?br\s*\/?>/i);
+        return parts.map(p => cleanToPureText(p)).filter(p => p.length > 0);
+    }
+    
+    // 读取文件
+    function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsText(file, 'UTF-8');
+        });
+    }
+    
+    // 获取音频blob (缓存)
+    function getAudioBlobUrl(fileName, allFiles) {
+        if (audioBlobCache.has(fileName)) return audioBlobCache.get(fileName);
+        const target = allFiles.find(f => f.name === fileName);
+        if (!target) return null;
+        const url = URL.createObjectURL(target);
+        audioBlobCache.set(fileName, url);
+        return url;
+    }
+    
+    // 解析json文件，只提取标准题型，不保存任何额外补充内容
+    async function parseStandardJson(file, allFiles) {
+        try {
+            const rawText = await readFileAsText(file);
+            const json = JSON.parse(rawText);
+            
+            // 标准结构必须具备 structure_type 和 info
+            if (json.structure_type && json.info) {
+                const type = json.structure_type;
+                const info = json.info || {};
+                const stid = info.stid || '';
+                
+                // 1. 听后选择 collector.choose
+                if (type === 'collector.choose') {
+                    const dialogueRaw = info.st_nr || '';
+                    const xtlist = info.xtlist || [];
+                    xtlist.forEach(xt => {
+                        const key = `${stid}_${xt.xt_xh}`;
+                        if (!store.choose.has(key)) {
+                            // 题目内容净化
+                            const titleClean = cleanToPureText(xt.xt_nr);
+                            const dialogueClean = cleanToPureText(xt.xt_value || dialogueRaw);
+                            const options = (xt.xxlist || []).map(opt => ({
+                                label: opt.xx_mc,
+                                text: cleanToPureText(opt.xx_nr)
+                            }));
+                            store.choose.set(key, {
+                                stid,
+                                title: titleClean || '题目',
+                                dialogue: dialogueClean,
+                                options: options,
+                                answer: xt.answer || '?'
+                            });
+                        }
+                    });
+                }
+                // 2. 听后转述 collector.picture
+                else if (type === 'collector.picture') {
+                    if (!store.picture.has(stid)) {
+                        const keypointsRaw = info.keypoint || '';
+                        const keypointList = cleanKeypointList(keypointsRaw);
+                        store.picture.set(stid, {
+                            stid,
+                            topic: cleanToPureText(info.topic),
+                            fullText: cleanToPureText(info.value),
+                            keypoints: keypointList,
+                            startSentence: cleanToPureText(info.analyze),
+                            audioFile: info.audio || '',
+                            imageFile: info.image || ''
+                        });
+                    }
+                }
+                // 3. 朗读短文 collector.read
+                else if (type === 'collector.read') {
+                    if (!store.read.has(stid)) {
+                        store.read.set(stid, {
+                            stid,
+                            article: cleanToPureText(info.value),
+                            translation: info.translate ? cleanToPureText(info.translate) : '',
+                            analysis: cleanToPureText(info.analyze),
+                            audioFile: info.audio || ''
+                        });
+                    }
+                }
+                // 4. 角色扮演 collector.role
+                else if (type === 'collector.role') {
+                    if (!store.role.has(stid)) {
+                        store.role.set(stid, {
+                            stid,
+                            content: cleanToPureText(info.value || info.dialogue || ''),
+                            extraNotes: cleanToPureText(info.keypoint || info.analyze),
+                            audioFile: info.audio || ''
+                        });
+                    }
+                }
+                // 5. 听后回答 collector.ask
+                else if (type === 'collector.ask') {
+                    const qlist = info.qlist || [];
+                    qlist.forEach((q, idx) => {
+                        const key = `${stid}_${idx}`;
+                        if (!store.ask.has(key)) {
+                            store.ask.set(key, {
+                                stid,
+                                question: cleanToPureText(q.question || q.xt_nr || ''),
+                                answer: cleanToPureText(q.answer || ''),
+                                explanation: cleanToPureText(q.analyze || '')
+                            });
+                        }
+                    });
+                }
+                // 其他题型（如collector.dictation等）暂不处理，因为用户只需要能读懂的核心题型
+            }
+            // 忽略任何数组、info.json等额外原始数据，完全不保存到store
+        } catch (e) {
+            // 静默跳过无法解析的文件
+            console.debug('解析跳过（非关键文件）', file.name);
+        }
+    }
+    
+    // 重置数据并释放blob内存
+    function resetStoreAndCache() {
+        for (let url of audioBlobCache.values()) {
+            URL.revokeObjectURL(url);
+        }
+        audioBlobCache.clear();
+        store.choose.clear();
+        store.picture.clear();
+        store.read.clear();
+        store.role.clear();
+        store.ask.clear();
+    }
+    
+    // 主加载：遍历所有json，只提取标准题型
+    async function loadPureAnswers() {
+        if (!chosenFiles.length) {
+            alert('请先点击「选择文件夹」并定位到数字ID缓存目录（例如 .../ETS/587147）');
+            return;
+        }
+        outputDiv.innerHTML = '<div class="loading">📡 正在解析缓存文件，请稍后……</div>';
+        resetStoreAndCache();
+        
+        const jsonFiles = chosenFiles.filter(f => f.name.toLowerCase().endsWith('.json'));
+        if (jsonFiles.length === 0) {
+            outputDiv.innerHTML = '<div class="card" style="color:#b32810;">⚠️ 文件夹内未找到任何 .json 文件，请确认选择了正确的数字ID目录（包含 content*.json）。</div>';
+            return;
+        }
+        
+        // 并行解析，只存入标准题型
+        const tasks = jsonFiles.map(file => parseStandardJson(file, chosenFiles));
+        await Promise.allSettled(tasks);
+        
+        // 渲染纯净视图（无任何补充材料）
+        renderCleanView();
+    }
+    
+    // 构建音频播放器（若同目录存在音频文件）
+    function buildAudioPlayer(audioFileName, allFiles, label = '听力音频') {
+        if (!audioFileName) return '';
+        const url = getAudioBlobUrl(audioFileName, allFiles);
+        if (!url) return `<div class="stid">🔊 音频文件: ${audioFileName} (未找到，请确保同名文件在同一目录)</div>`;
+        return `<div class="audio-player"><span>🎧 ${label}:</span><audio controls src="${url}"></audio><span class="stid">${audioFileName}</span></div>`;
+    }
+    
+    // 渲染所有标准题型 (100% 干净，无json原文，无补充区)
+    function renderCleanView() {
+        let html = '';
+        
+        // ---------- 1. 听后选择 ----------
+        if (store.choose.size > 0) {
+            const items = Array.from(store.choose.values()).sort((a,b) => a.stid.localeCompare(b.stid));
+            html += `<h3 class="section-title">🎧 听后选择 · 共 ${items.length} 小题</h3>`;
+            html += `<div class="card" style="overflow-x:auto;">`;
+            html += `<table><thead><tr><th>#</th><th>题目</th><th>听力原文（纯文章）</th><th>选项</th><th>答案</th></tr></thead><tbody>`;
+            items.forEach((q, idx) => {
+                const optionsHtml = q.options.map(opt => `<span class="option-badge">${opt.label}. ${opt.text}</span>`).join('<br>');
+                html += `<tr>
+                            <td style="width:50px">${idx+1}<br><span class="stid">${q.stid}</span></td>
+                            <td><strong>${q.title}</strong></td>
+                            <td class="dialogue-text">${q.dialogue || '—'}</td>
+                            <td>${optionsHtml || '无选项'}</td>
+                            <td class="answer">${q.answer}</td>
+                         </tr>`;
+            });
+            html += `</tbody></table></div>`;
+        }
+        
+        // ---------- 2. 听后转述 (纯净要点+原文) ----------
+        if (store.picture.size > 0) {
+            const items = Array.from(store.picture.values());
+            html += `<h3 class="section-title">🎤 听后转述 · 共 ${items.length} 题</h3>`;
+            items.forEach((p, idx) => {
+                const keypointHtml = p.keypoints.length ? 
+                    `<ul class="keypoint-list">${p.keypoints.map(k => `<li>${k}</li>`).join('')}</ul>` : '';
+                const startHtml = p.startSentence ? `<p><strong>📌 起始句参考：</strong> ${p.startSentence}</p>` : '';
+                const audioHtml = buildAudioPlayer(p.audioFile, chosenFiles, '转述原文音频');
+                html += `
+                <div class="picture-card">
+                    <div><span class="badge-type">📌 转述训练</span> <strong>${idx+1}. ${p.topic || '转述主题'}</strong> <span class="stid">ID: ${p.stid}</span></div>
+                    <p><strong>📖 完整文章：</strong><br>${p.fullText || '—'}</p>
+                    ${keypointHtml}
+                    ${startHtml}
+                    ${audioHtml}
+                </div>`;
+            });
+        }
+        
+        // ---------- 3. 朗读短文/阅读理解 ----------
+        if (store.read.size > 0) {
+            const items = Array.from(store.read.values());
+            html += `<h3 class="section-title">📖 朗读短文 · 阅读理解 (共 ${items.length} 篇)</h3>`;
+            items.forEach((r, idx) => {
+                const audioHtml = buildAudioPlayer(r.audioFile, chosenFiles, '文章朗读');
+                const transHtml = r.translation ? `<details><summary>🌐 参考译文</summary><div style="background:#f9fafc; padding:14px; border-radius:20px; margin:12px 0; line-height:1.5;">${r.translation}</div></details>` : '';
+                html += `
+                <div class="read-card">
+                    <div><span class="badge-type">📄 阅读材料</span> <strong>${idx+1}. 文章内容</strong> <span class="stid">ID: ${r.stid}</span></div>
+                    <div style="background:#fefefe; padding:16px; border-radius:24px; margin:14px 0; line-height:1.6; font-size:0.96rem;">
+                        ${r.article}
+                    </div>
+                    ${transHtml}
+                    ${r.analysis ? `<p><strong>💡 解析/要点：</strong> ${r.analysis}</p>` : ''}
+                    ${audioHtml}
+                </div>`;
+            });
+        }
+        
+        // ---------- 4. 角色扮演 (若有) ----------
+        if (store.role.size > 0) {
+            const items = Array.from(store.role.values());
+            html += `<h3 class="section-title">🎭 角色扮演 (共 ${items.length} 个场景)</h3>`;
+            items.forEach((role, idx) => {
+                const audioHtml = buildAudioPlayer(role.audioFile, chosenFiles, '对话音频');
+                html += `<div class="read-card">
+                            <span class="badge-type">🎙️ 角色对话</span> <strong>${idx+1}. 对话内容</strong> <span class="stid">${role.stid}</span>
+                            <div style="margin-top:12px; padding:8px 0;">${role.content}</div>
+                            ${role.extraNotes ? `<div class="stid" style="margin-top:6px;">✏️ 提示：${role.extraNotes}</div>` : ''}
+                            ${audioHtml}
+                         </div>`;
+            });
+        }
+        
+        // ---------- 5. 听后回答 ----------
+        if (store.ask.size > 0) {
+            const items = Array.from(store.ask.values());
+            html += `<h3 class="section-title">❓ 听后回答 (共 ${items.length} 题)</h3><div class="card">`;
+            items.forEach((qa, idx) => {
+                html += `<div style="border-bottom:1px solid #e6edf4; padding:14px 0;">
+                            <div><b>${idx+1}. 问题：</b> ${qa.question}</div>
+                            <div><b>✅ 参考答案：</b> <span style="color:#bc4e2c; font-weight:500;">${qa.answer}</span></div>
+                            ${qa.explanation ? `<div class="stid">📘 解析：${qa.explanation}</div>` : ''}
+                         </div>`;
+            });
+            html += `</div>`;
+        }
+        
+        // 没有任何题型数据时
+        if (store.choose.size === 0 && store.picture.size === 0 && store.read.size === 0 &&
+            store.role.size === 0 && store.ask.size === 0) {
+            html = `<div class="card" style="background:#fff5eb;">📭 未识别到任何标准题型。请确保选择的文件夹包含 E听说缓存文件（content*.json 等），且目录为数字ID文件夹（例如 .../ETS/587147）。</div>`;
+        }
+        
+        outputDiv.innerHTML = html || '<div class="card">✨ 答案加载完成，当前套题暂无上述题型。</div>';
+    }
+    
+    // 文件夹选择逻辑
+    selectFolderBtn.addEventListener('click', () => {
+        folderInput.click();
+    });
+    
+    folderInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) {
+            chosenFiles = [];
+            fileCountBadge.textContent = '⚡ 未选择文件夹';
+            return;
+        }
+        chosenFiles = files;
+        fileCountBadge.textContent = `✅ 已选目录 (${chosenFiles.length} 个文件) — 建议选中数字ID文件夹`;
+        // 简单提示成功
+    });
+    
+    loadBtn.addEventListener('click', () => {
+        if (!chosenFiles.length) {
+            alert('请先点击「选择文件夹」并定位到 E听说数字ID缓存目录（例如 .../ETS/587147）');
+            return;
+        }
+        loadPureAnswers();
+    });
+    
+    // 页面启动友好提示
+    fileCountBadge.textContent = '📁 待选择缓存目录';
+</script>
+</body>
+</html>
